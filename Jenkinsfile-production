@@ -1,0 +1,32 @@
+pipeline {
+  agent {
+    docker {
+      image 'alpine'
+    }
+  }
+  parameters {
+    string (
+      defaultValue: '', 
+      name: 'fileName', 
+      trim: true
+    )
+  }
+    stages {
+        stage('Production ...'){
+            when {
+                expression {
+                return params.fileName != ''
+                }
+            }
+            steps {
+                withAWS(region:'eu-west-1', credentials:'adi'){
+                    sh 'if [ -d "deploy" ]; then rm -Rf deploy; fi'
+                    sh 'mkdir deploy'
+                    s3Download file:"${params.fileName}.tar.gzip", bucket:'adibucketartifacts', path:"production/${params.fileName}.tar.gzip"
+                    sh "tar -xzf ${params.fileName}.tar.gzip -C ./deploy"
+                    s3Upload bucket:'adibucketproduction', includePathPattern:'**/*', workingDir:'deploy'
+                }
+            }
+        }
+    }
+}
