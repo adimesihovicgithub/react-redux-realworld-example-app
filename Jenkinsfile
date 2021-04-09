@@ -14,7 +14,7 @@ pipeline {
         }
         stage('Faza_Artifakti'){
             steps{
-                withAWS(region:'eu-west-1', credentials:'adi') {
+                withAWS(region:'eu-west-1', credentials:'aws') {
                     s3Upload file:"staging/${BRANCH_NAME}_${BUILD_NUMBER}.tar.gzip", bucket:'adibucketartifacts', path:'staging/'
                     s3Upload file:"production/${BRANCH_NAME}_${BUILD_NUMBER}.tar.gzip", bucket:'adibucketartifacts', path:'production/'
                 }
@@ -22,7 +22,7 @@ pipeline {
         }
         stage('Faza_Stage'){
             steps{
-                withAWS(region:'eu-west-1', credentials:'adi'){
+                withAWS(region:'eu-west-1', credentials:'aws'){
                     s3Upload bucket:'adibucketstaging', includePathPattern:'**/*', workingDir:'staging/build'
                 }
             }

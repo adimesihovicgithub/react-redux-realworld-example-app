@@ -19,7 +19,7 @@ pipeline {
                 }
             }
             steps {
-                withAWS(region:'eu-west-1', credentials:'adi'){
+                withAWS(region:'eu-west-1', credentials:'aws'){
                     sh 'if [ -d "deploy" ]; then rm -Rf deploy; fi'
                     sh 'mkdir deploy'
                     s3Download file:"${params.fileName}.tar.gzip", bucket:'adibucketartifacts', path:"production/${params.fileName}.tar.gzip"
