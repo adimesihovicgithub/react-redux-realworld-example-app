@@ -1,18 +1,17 @@
 pipeline {
-      agent {
-       docker {
-        image 'node:alpine'
-        args '-p 3000:3000'
-       }
-      }
-     
-     stages {
-        stage('Faza_Bild') { 
+  agent {
+    docker {
+      image 'node:alpine'
+      args '-p 3000:3000'
+    }
+  }
+    stages {
+        stage('Build') { 
             steps {
                 sh '${WORKSPACE}/build.sh ${BRANCH_NAME} ${BUILD_NUMBER}' 
             }
         }
-        stage('Faza_Artifakti'){
+        stage('Publish_artifacts'){
             steps{
                 withAWS(region:'eu-west-1', credentials:'aws') {
                     s3Upload file:"staging/${BRANCH_NAME}_${BUILD_NUMBER}.tar.gzip", bucket:'adibucketartifacts', path:'staging/'
@@ -20,7 +19,7 @@ pipeline {
                 }
             }
         }
-        stage('Faza_Stage'){
+        stage('Deploy_Staging'){
             steps{
                 withAWS(region:'eu-west-1', credentials:'aws'){
                     s3Upload bucket:'adibucketstaging', includePathPattern:'**/*', workingDir:'staging/build'
@@ -28,4 +27,6 @@ pipeline {
             }
         }
     }
-}
+
+  }
+
