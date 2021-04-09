@@ -13,15 +13,14 @@ tar -cf - --exclude './staging' --exclude './production' . | tar -xC production
 sed -i 's/conduit.productionready.io/staging.productionready.io/g' staging/src/agent.js
 sed -i 's/conduit.productionready.io/production.productionready.io/g' production/src/agent.js
 
-echo "Staging Build ..."
+echo "Starting Staging Build"
 cd staging
 npm install
 npm run build
 tar -C ./build -zcf ${BRANCH_NAME}_${BUILD_NUMBER}.tar.gzip ./
 
-echo "Production build ..."
+echo "Starting Production build"
 cd ../production
 npm install
 npm run build
 tar -C ./build -zcf ${BRANCH_NAME}_${BUILD_NUMBER}.tar.gzip ./
-
